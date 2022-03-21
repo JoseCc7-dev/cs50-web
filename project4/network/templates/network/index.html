@@ -1,0 +1,91 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<input type="hidden" id="url_path" value="http://127.0.0.1:8000/">
+<h1 style="margin-left: 15px;">All Posts</h1>
+    <div id="new_post" class="form-control" style="height: fit-content; width: 95%; margin-left: auto; margin-right: auto;">
+        <div>
+            <strong>New Post</strong>
+        </div>
+        <form action="{{ pg_num }}" method="post">
+            {% csrf_token %}
+        <textarea class="form-control" maxlength="280" name="content"></textarea>
+        <button class="btn btn-primary" >Post</button>
+        </form>
+    </div>
+    {% if posts_and_likes %}
+    {% for post_like in posts_and_likes %}
+    <div id="post_{{ post_like.0.id }}" class="form-control" style="height: fit-content; width: 95%; margin-left: auto; margin-right: auto;">
+        <h6><strong><a href="{{ post_like.0.poster }}/1" style="text-decoration: none; color: #495057;">{{ post_like.0.poster }}</a></strong></h6>
+        {% if user.username == post_like.0.poster|stringformat:"s" %}
+        <a id="edit_post" onclick="edit_post('{{ post_like.0.id }}');return false;" href="" >Edit</a>
+        {% endif %}
+        <div id="post_text_{{ post_like.0.id }}">{{ post_like.0.text }}</div>
+        <div>{{ post_like.0.timestamp }}</div>
+        <div id="post_like_{{ post_like.0.id }}"><span onclick="like_post('{{ post_like.0.id }}')">Like</span><span id="post_like_count_{{ post_like.0.id }}"> {{ post_like.1 }}</span></div>
+        <div id="post_comment_{{ post_like.0.id }}">Comment</div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% if pg_num == 1 and last == True %}
+    <nav aria-label="...">
+        <ul class="pagination justify-content-center">
+        <li class="page-item disabled">
+            <span class="page-link" id="previous">Previous</span>
+        <li class="page-item active" aria-current="page">
+            <span class="page-link" id="page_number">
+                {{pg_num}}
+            </span>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" id="next">Next</a>
+        </li>
+        </ul>
+    </nav>
+    {% elif pg_num == 1 %}
+    <nav aria-label="...">
+        <ul class="pagination justify-content-center">
+        <li class="page-item disabled">
+            <span class="page-link" id="previous">Previous</span>
+        <li class="page-item active" aria-current="page">
+            <span class="page-link" id="page_number">
+                {{pg_num}}
+            </span>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="#" id="next">Next</a>
+        </li>
+        </ul>
+    </nav>
+    {% elif last == True %}
+    <nav aria-label="...">
+        <ul class="pagination justify-content-center">
+        <li class="page-item">
+            <a class="page-link" href="#" id="previous">Previous</a>
+        <li class="page-item active" aria-current="page">
+            <span class="page-link" id="page_number">
+                {{pg_num}}
+            </span>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" href="#" id="next">Next</a>
+        </li>
+        </ul>
+    </nav>
+    {% else %}
+    <nav aria-label="...">
+        <ul class="pagination justify-content-center">
+        <li class="page-item">
+            <a class="page-link" href="#" id="previous">Previous</a>
+        <li class="page-item active" aria-current="page">
+            <span class="page-link" id="page_number">
+                {{pg_num}}
+            </span>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="#" id="next">Next</a>
+        </li>
+        </ul>
+    </nav>
+    {% endif %}
+{% endblock %}

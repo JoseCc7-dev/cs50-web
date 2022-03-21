@@ -1,0 +1,70 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    
+    <div><h1>Listing: {{ item.title }}</h1></div>
+    <div><h4>Category: {{ item.category }}</h4></div>
+    {% if user.is_authenticated %}
+    <form action="{{ item.title }}" method="post">
+    {% csrf_token %}
+        {% if added %}
+        
+        <button type="submit" class="btn btn-link" name="remove" value="remove">Remove from Watchlist</button>
+        {% else %}
+        
+        <button type="submit" class="btn btn-link" name="add" value="add">Add to Watchlist</button>
+        {% endif %}
+    {% endif %}
+    </form>
+    {% if item.imageurl %}
+    <div style="margin: auto; width: 50%; padding: 10px;"><img src="{{ item.imageurl }}" alt="Listing Image"></div>
+    {% endif %}
+    {% for line in content %}
+    <div>{{ line }}</div>
+    {% endfor %}
+    {% if item.active == True %}
+        <br><div><h4> Starting Bid </h4>{{ item.starting_bid }}</div><br>
+        <div><h4> Current Bid </h4>{{ item.current_bid }}</div><br>
+        {% if user.is_authenticated %}
+        Bid on Item:
+        <form action="{{ item.title }}" method="post">
+        {% csrf_token %}
+        {% if item.current_bid > 0 %}
+        <input type="number" name="bid" placeholder="Bid Amount" autocomplete="off"></input>
+        {% else %}
+        <input type="number" name="bid" placeholder="Bid Amount" autocomplete="off" min="{{ item.starting_bid }}"></input>
+        {% endif %}
+        <button type="submit" class="btn btn-primary" value="submit">Place Bid</button>
+        </form>
+        {% endif %}
+        {% if creator == True %}
+        <form action="{{ item.title }}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary" name="close" value="close">Close Listing</button>
+        </form>
+        {% endif %}
+    {% endif %}
+    {% if item.active != True %}
+    <div>Listing Is Closed</div>
+    {% if winner == True %}
+    <h5>Congratulations You've Won This Listing!!!</h5>
+    {% endif %}
+    {% endif %}
+    {% if winner == True and item.active == True%}
+    <h5>You Are The Highest Bidder So Far!!!</h5>
+    {% endif %}
+    <h5>Comments:</h5>
+    {% for comment in comments %}
+    <div><strong>{{ comment.user_id }}</strong></div><br>
+    <pre><div>{{ comment.text }}</div><br></pre>
+    {% endfor %}
+    {% if user.is_authenticated %}
+    <h6>Add a comment</h6>
+    <form action="{{ item.title }}" method="post">
+    {% csrf_token %}
+    <textarea class="form-control" rows="3" name="comment" placeholder="Your Comment Here"></textarea>
+    <br>
+    <button type="submit" class="btn btn-primary" name="add_comment" value="add_comment">Comment</button>
+    </form>
+    {% endif %}
+{% endblock %}

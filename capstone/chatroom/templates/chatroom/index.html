@@ -1,0 +1,11 @@
+{% extends "chatroom/layout.html" %}
+
+{% block body %}
+
+    {% for room in rooms %}
+        <div class="form-control" style="width: 80%; margin: auto;">
+            <span><a href="{{ room.roomname }}">{{ room.roomname }}</a></span>
+            <span style="float: right;">{{ room.connections }}</span>
+        </div>
+    {% endfor %}
+{% endblock %}

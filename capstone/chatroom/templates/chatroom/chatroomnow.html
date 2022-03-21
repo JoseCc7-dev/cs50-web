@@ -1,0 +1,130 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% csrf_token %}
+        <title>{% block title %} World Chat {% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+        <link href="{% static 'chatroom/styles.css' %}" rel="stylesheet">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
+    <body class="body" style="background-color: white;">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="{% url 'index' %}">Chatroom</a>
+            
+            <div>
+                <ul class="navbar-nav mr-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}"><strong id="curruser">{{ user.username }}</strong></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Inbox</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+                {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <div class="page-content page-container" id="page-content">
+            <div class="padding">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card card-bordered" style="box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; border: 1px solid rgb(240, 240, 240);">
+                            <div class="card-header">
+                                <h4 class="card-title" style="color: black; font-weight: bold;"><strong>{{ room_name.0 }}</strong> </h4>
+                            </div>
+                            <div class="ps-container ps-theme-default ps-active-y" id="chat-content" style="overflow-y: scroll !important; height:400px !important;">
+                                {% for message_bool in messages_and_bool %}
+                                {% if message_bool.1 == True %}
+                                <div class="media media-chat media-chat-reverse">
+                                    <div class="media-body">
+                                        <p class="meta" style="color: #9b9b9b;">{{ message_bool.0.user }}</p>
+                                        <p>{{ message_bool.0.text }}</p>
+                                        <p class="meta"><time datetime="2022">{{ message_bool.0.time }}</time></p>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="media media-chat"> <img class="avatar" src="https://img.icons8.com/color/36/000000/administrator-male.png" alt="...">
+                                    <div class="media-body">
+                                        <p class="meta" style="color: #9b9b9b;">{{ message_bool.0.user }}</p>
+                                        <p>{{ message_bool.0.text }}</p>
+                                        <p class="meta"><time datetime="2022">{{ message_bool.0.time }}</time></p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                <div class="ps-scrollbar-x-rail" style="left: 0px; bottom: 0px;">
+                                    <div class="ps-scrollbar-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+                                </div>
+                                <div class="ps-scrollbar-y-rail" style="top: 0px; height: 0px; right: 2px;">
+                                    <div class="ps-scrollbar-y" tabindex="0" style="top: 0px; height: 2px;"></div>
+                                </div>
+                            </div>
+                            <div class="publisher bt-1 border-light"> <img class="avatar avatar-xs" src="https://img.icons8.com/color/36/000000/administrator-male.png" alt="..."> <input class="publisher-input" type="text" placeholder="Write something" id="new_message" autofocus> <a class="publisher-btn text-info" data-abc="true"><i class="fa fa-paper-plane" id="send_message"></i></a> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{ room_name.0|json_script:"room-name" }}
+        <script>
+            const roomName = JSON.parse(document.getElementById('room-name').textContent);
+            const user = document.querySelector("#curruser").innerHTML;
+            const chatSocket = new WebSocket(
+                'ws://'
+                + window.location.host
+                + '/ws/chatroom/'
+                + roomName
+                + '/'
+            );
+    
+            chatSocket.onmessage = function(e) {
+                
+                const data = JSON.parse(e.data);
+                send_message(data.message, user)
+                console.log("data message:", data.message)
+                return false
+            };
+    
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly');
+            };
+    
+            document.querySelector('#new_message').focus();
+            document.querySelector('#new_message').onkeyup = function(e) {
+                if (e.keyCode === 13) {  // enter, return
+                    document.querySelector('#send_message').click();
+                }
+            };
+    
+            document.querySelector('#send_message').onclick = function(e) {
+                const messageInputDom = document.querySelector('#new_message');
+                const message = messageInputDom.value;
+                console.log("message:", message)
+                chatSocket.send(JSON.stringify({
+                    'message': message
+                }));
+                messageInputDom.value = '';
+                test()
+            };
+        </script>
+    </body>
+    {% block script %}
+        <script src="{% static 'chatroom/script.js' %}"></script>
+        <script src="{% static 'chatroom/moment.js' %}"></script>
+    {% endblock %}
+</html>

@@ -1,0 +1,21 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %} 
+    {{ title }}
+{% endblock %} 
+
+{% block body %} 
+{% if entry %}    
+    {% autoescape off %}
+        {{ entry }}
+    {% endautoescape %}
+    <a href="edit/?title={{ title }}">Edit Page</a>
+{% elif editcontent %}
+    <form action="{% url 'index' %}{{ title }}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="title" value="{{ title }}">
+    <textarea placeholder="Entry Content" name="content" rows="10" cols="6" required style="height: fit-content;">{% for line in editcontent %}{{ line }}{% endfor %}</textarea><br>
+    <input type="submit" value="Submit & Save">
+    </form>
+{% endif %}
+{% endblock %}

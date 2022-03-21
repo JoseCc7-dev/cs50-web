@@ -1,0 +1,22 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if cats %}
+        <h2>Categories</h2>
+        <form action="{% url 'categories' %}" method="post">
+        {% csrf_token %}
+        {% for cat in cats %}
+        <div>
+        <button type="submit" class="btn btn-link" name="cat" value="{{ cat }}">{{ cat }}</button>
+        </div>
+        {% endfor %}
+        </form>
+    {% elif listings %}
+        <h2>Listings</h2>
+        {% for item in listings %}
+        <div>
+            <a href="{{ item.title }}">{{ item.title }}</a>
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

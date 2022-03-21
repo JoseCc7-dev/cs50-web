@@ -1,0 +1,14 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Create New Page 
+{% endblock %} 
+
+{% block body %} 
+    <form action="{% url 'index' %}" method="post">
+        {% csrf_token %}
+        <input type="text" placeholder="Entry Title" name="title" autocomplete="off"><br>
+        <textarea placeholder="Entry Content" name="content" rows="10" cols="6" required style="height: fit-content;"></textarea><br>
+        <input type="submit" value="Submit & Save">
+    </form>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    <ul>
+        {% for item in listings  %}
+        <div>{% if item.imageurl %}
+            <img src="{{ item.imageurl }}" alt="Listing Image">
+            {% endif %}
+            <a href="{{ item.title }}">{{ item.title }}</a>
+        </div>
+        <br>
+        {% endfor %}
+    </ul>
+    {% if user.is_authenticated %}
+        <div><a href="{% url 'newlisting' %}">Create New Listing</a></div>
+    {% endif %}
+{% endblock %}

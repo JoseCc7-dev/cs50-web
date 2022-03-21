@@ -20,6 +20,3 @@ class Message(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) 
     time = models.DateTimeField(auto_now_add=True)
 
-# Followers(): temp?
-    # foreign key follower
-    # foreign key followed

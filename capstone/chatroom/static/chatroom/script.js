@@ -64,7 +64,7 @@ function update_chat(message, user) {
     chatbox.append(div)
     // Scroll to Bottom of Chat
     chatbox.scrollTop = chatbox.scrollHeight
-    // Reset input field and focus
+    // Reset input field and set focus
     const user_message = document.querySelector("#new_message")
     user_message.value = ""
     user_message.focus()

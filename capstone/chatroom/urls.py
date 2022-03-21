@@ -11,8 +11,4 @@ urlpatterns = [
     path("send", views.new_message, name="message"),
     
     path("<str:room_name>/", views.load_chatroom, name="chatroom"),
-    # path("user/<str:name>", views.load_user, name="user"),
-    
-    
-    
 ]

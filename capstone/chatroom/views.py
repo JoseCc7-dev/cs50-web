@@ -1,14 +1,11 @@
-import sqlite3
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .models import User, Room, Chatter, Message
-# from django.views.decorators.csrf import csrf_exempt
-from django.core.paginator import Paginator
+from .models import User, Room, Message
 
 # Create your views here.
 def index(request):
@@ -19,7 +16,7 @@ def index(request):
 
 def register(request):
     if request.method == "POST":
-        username = request.POST["username"]
+        username = request.POST["username"].strip()
 
         if request.POST["password"] == request.POST["confirm_password"]:
             password = request.POST["password"]
@@ -37,7 +34,7 @@ def register(request):
 
 def login_view(request):
     if request.method == "POST":
-        username = request.POST["username"]
+        username = request.POST["username"].strip()
         password = request.POST["password"]
         user = authenticate(request, username = username, password = password)
         
